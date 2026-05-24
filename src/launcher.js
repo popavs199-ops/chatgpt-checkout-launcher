@@ -1,8 +1,10 @@
 // ==UserScript==
 // @name         ChatGPT Checkout Launcher
-// @namespace    https://chatgpt.com/
-// @version      2.0.0
-// @description  Adds a floating panel to chatgpt.com with quick links to regional Stripe checkout URLs and a token copy helper.
+// @namespace    https://rexopay.eu/
+// @version      2.1.0
+// @description  Adds a floating panel to chatgpt.com with quick links to regional Stripe checkout URLs and a token copy helper. Made by Thomas (@final_getsuga_tenshou - https://rexopay.eu/).
+// @author       Thomas (@final_getsuga_tenshou)
+// @homepage     https://rexopay.eu/
 // @match        https://chatgpt.com/*
 // @run-at       document-idle
 // @grant        none
@@ -71,55 +73,133 @@
   ];
 
   // --------------------------------------------------------------------
-  // Style block
+  // Style block.
+  //
+  // ChatGPT's site CSS is aggressive (Tailwind + custom resets), so every
+  // visual property below uses !important and the font stack is set
+  // explicitly on every text node. Without this, button labels render
+  // empty / transparent / size-0 inside the panel.
   // --------------------------------------------------------------------
+  const FONT_STACK = '14px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
   const css = `
+    #gpcl-panel, #gpcl-panel * {
+      box-sizing: border-box !important;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+      letter-spacing: normal !important;
+      text-transform: none !important;
+    }
     #gpcl-panel {
-      position: fixed; right: 20px; bottom: 20px; z-index: 2147483647;
-      width: 260px; padding: 14px;
-      background: #161821; color: #e8e9ee;
-      border: 1px solid #2a2d3a; border-radius: 14px;
-      font: 14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
-      box-shadow: 0 12px 32px rgba(0,0,0,0.35);
-      user-select: none;
+      position: fixed !important;
+      right: 20px !important; bottom: 20px !important;
+      top: auto !important; left: auto !important;
+      z-index: 2147483647 !important;
+      width: 260px !important; padding: 14px !important;
+      margin: 0 !important;
+      background: #161821 !important;
+      color: #e8e9ee !important;
+      border: 1px solid #2a2d3a !important;
+      border-radius: 14px !important;
+      font: ${FONT_STACK} !important;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.35) !important;
+      user-select: none !important;
+      opacity: 1 !important;
+      visibility: visible !important;
     }
-    #gpcl-panel * { box-sizing: border-box; }
     #gpcl-header {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 10px; cursor: move;
+      display: flex !important;
+      justify-content: space-between !important;
+      align-items: center !important;
+      margin: 0 0 10px 0 !important;
+      cursor: move !important;
     }
-    #gpcl-title { font-weight: 600; font-size: 13px; }
-    #gpcl-close, #gpcl-mini-toggle {
-      background: transparent; border: none; color: #8b8f9c;
-      cursor: pointer; font-size: 14px; padding: 2px 6px;
+    #gpcl-title {
+      font: 600 13px/1.2 -apple-system, BlinkMacSystemFont, sans-serif !important;
+      color: #e8e9ee !important;
     }
-    #gpcl-close:hover, #gpcl-mini-toggle:hover { color: #e8e9ee; }
+    #gpcl-mini-toggle {
+      background: transparent !important;
+      border: none !important;
+      color: #8b8f9c !important;
+      cursor: pointer !important;
+      font: 600 16px/1 sans-serif !important;
+      padding: 2px 8px !important;
+    }
+    #gpcl-mini-toggle:hover { color: #e8e9ee !important; }
     .gpcl-btn {
-      display: flex; align-items: center; gap: 8px;
-      width: 100%; margin-top: 8px; padding: 9px 12px;
-      background: #1f2230; color: #e8e9ee;
-      border: 1px solid #2a2d3a; border-radius: 9px;
-      font: inherit; cursor: pointer; text-align: left;
-      transition: background 0.12s, border-color 0.12s;
+      display: flex !important;
+      align-items: center !important;
+      gap: 8px !important;
+      width: 100% !important;
+      margin: 8px 0 0 0 !important;
+      padding: 9px 12px !important;
+      background: #1f2230 !important;
+      color: #e8e9ee !important;
+      border: 1px solid #2a2d3a !important;
+      border-radius: 9px !important;
+      font: 500 14px/1.3 -apple-system, BlinkMacSystemFont, sans-serif !important;
+      cursor: pointer !important;
+      text-align: left !important;
+      transition: background 0.12s, border-color 0.12s !important;
+      opacity: 1 !important;
+      visibility: visible !important;
     }
-    .gpcl-btn:hover { background: #262a3a; border-color: #19c37d; }
-    .gpcl-btn:disabled { opacity: 0.6; cursor: wait; }
-    .gpcl-btn .gpcl-emoji { font-size: 16px; flex-shrink: 0; }
-    .gpcl-btn.gpcl-token { background: transparent; }
+    .gpcl-btn:hover {
+      background: #262a3a !important;
+      border-color: #19c37d !important;
+    }
+    .gpcl-btn:disabled { opacity: 0.6 !important; cursor: wait !important; }
+    .gpcl-btn .gpcl-emoji {
+      font: 16px/1 "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif !important;
+      flex-shrink: 0 !important;
+      color: #fff !important;
+    }
+    .gpcl-btn .gpcl-label {
+      font: 500 14px/1.3 -apple-system, BlinkMacSystemFont, sans-serif !important;
+      color: #e8e9ee !important;
+      flex: 1 !important;
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+    }
+    .gpcl-btn.gpcl-token { background: transparent !important; }
     #gpcl-status {
-      margin-top: 10px; padding: 8px 10px;
-      font-size: 12px; color: #8b8f9c;
-      background: #0e0f13; border-radius: 8px;
-      min-height: 18px; word-break: break-all;
+      margin: 10px 0 0 0 !important;
+      padding: 8px 10px !important;
+      font: 400 12px/1.4 -apple-system, BlinkMacSystemFont, sans-serif !important;
+      color: #8b8f9c !important;
+      background: #0e0f13 !important;
+      border-radius: 8px !important;
+      min-height: 18px !important;
+      word-break: break-all !important;
     }
-    #gpcl-status.gpcl-ok    { color: #19c37d; }
-    #gpcl-status.gpcl-err   { color: #ef4444; }
+    #gpcl-status.gpcl-ok    { color: #19c37d !important; }
+    #gpcl-status.gpcl-err   { color: #ef4444 !important; }
+    #gpcl-credit {
+      margin: 10px 0 0 0 !important;
+      padding: 0 !important;
+      font: 400 11px/1.4 -apple-system, BlinkMacSystemFont, sans-serif !important;
+      color: #8b8f9c !important;
+      text-align: center !important;
+    }
+    #gpcl-credit a {
+      color: #19c37d !important;
+      text-decoration: none !important;
+    }
+    #gpcl-credit a:hover { text-decoration: underline !important; }
     #gpcl-mini {
-      position: fixed; right: 20px; bottom: 20px; z-index: 2147483647;
-      padding: 10px 14px; background: #19c37d; color: #fff;
-      border: none; border-radius: 99px; cursor: pointer;
-      font: 600 13px/1 -apple-system,BlinkMacSystemFont,sans-serif;
-      box-shadow: 0 8px 20px rgba(25,195,125,0.35);
+      position: fixed !important;
+      right: 20px !important; bottom: 20px !important;
+      top: auto !important; left: auto !important;
+      z-index: 2147483647 !important;
+      margin: 0 !important;
+      padding: 10px 14px !important;
+      background: #19c37d !important;
+      color: #fff !important;
+      border: none !important;
+      border-radius: 99px !important;
+      cursor: pointer !important;
+      font: 600 13px/1 -apple-system, BlinkMacSystemFont, sans-serif !important;
+      box-shadow: 0 8px 20px rgba(25,195,125,0.35) !important;
     }
   `;
   const styleEl = document.createElement('style');
@@ -244,10 +324,12 @@
     GATEWAYS.forEach(g => {
       const btn = document.createElement('button');
       btn.className = 'gpcl-btn';
+      btn.type = 'button';
       const emoji = document.createElement('span');
       emoji.className = 'gpcl-emoji';
       emoji.textContent = g.emoji;
       const lbl = document.createElement('span');
+      lbl.className = 'gpcl-label';
       lbl.textContent = g.label;
       btn.appendChild(emoji);
       btn.appendChild(lbl);
@@ -257,10 +339,12 @@
 
     const tokenBtn = document.createElement('button');
     tokenBtn.className = 'gpcl-btn gpcl-token';
+    tokenBtn.type = 'button';
     const k = document.createElement('span');
     k.className = 'gpcl-emoji';
     k.textContent = '🔑';
     const kl = document.createElement('span');
+    kl.className = 'gpcl-label';
     kl.textContent = 'Copy access token';
     tokenBtn.appendChild(k);
     tokenBtn.appendChild(kl);
@@ -271,6 +355,13 @@
     statusEl.id = 'gpcl-status';
     statusEl.textContent = 'Ready.';
     panel.appendChild(statusEl);
+
+    // Credit footer
+    const credit = document.createElement('div');
+    credit.id = 'gpcl-credit';
+    credit.innerHTML =
+      'made by Thomas <a href="https://rexopay.eu/" target="_blank" rel="noopener">@final_getsuga_tenshou</a>';
+    panel.appendChild(credit);
 
     makeDraggable(panel, header);
     document.body.appendChild(panel);
@@ -330,7 +421,7 @@
     let collapsed = '0';
     try { collapsed = localStorage.getItem('gpcl-collapsed') || '0'; } catch (_) {}
     togglePanel(collapsed !== '1');
-    console.log('[ChatGPT Checkout Launcher] v2.0.0 ready');
+    console.log('[ChatGPT Checkout Launcher] v2.1.0 ready - made by Thomas (@final_getsuga_tenshou) - https://rexopay.eu/');
   }
 
   if (document.readyState === 'loading') {
