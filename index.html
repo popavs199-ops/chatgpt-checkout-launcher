@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Digital Subscription Router</title>
+  <meta name="description" content="Pick a subscription gateway and proceed to secure checkout." />
+  <style>
+    :root {
+      --bg: #0e0f13;
+      --card: #161821;
+      --card-hover: #1f2230;
+      --border: #2a2d3a;
+      --text: #e8e9ee;
+      --muted: #8b8f9c;
+      --accent: #19c37d;
+      --accent-hover: #15a368;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 520px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    h1 {
+      font-size: 28px;
+      font-weight: 600;
+      margin: 0 0 8px;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 15px;
+      margin: 0;
+    }
+
+    .buttons {
+      display: grid;
+      gap: 12px;
+    }
+
+    button.gateway {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 18px 22px;
+      background: var(--card);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, transform 0.05s;
+      text-align: left;
+      font-family: inherit;
+    }
+
+    button.gateway:hover {
+      background: var(--card-hover);
+      border-color: var(--accent);
+    }
+
+    button.gateway:active {
+      transform: scale(0.99);
+    }
+
+    button.gateway .label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    button.gateway .num {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    button.gateway .arrow {
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    button.gateway:hover .arrow {
+      color: var(--accent);
+    }
+
+    footer {
+      margin-top: 28px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    .status {
+      margin-top: 16px;
+      padding: 12px 16px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 14px;
+      color: var(--muted);
+      display: none;
+    }
+
+    .status.visible {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Digital Subscription Router</h1>
+      <p class="subtitle">Choose your gateway to proceed to secure checkout.</p>
+    </header>
+
+    <div class="buttons">
+      <button class="gateway" data-key="1">
+        <span class="label"><span class="num">1</span>GoPay Premium</span>
+        <span class="arrow">&rarr;</span>
+      </button>
+      <button class="gateway" data-key="2">
+        <span class="label"><span class="num">2</span>PayPal Standard</span>
+        <span class="arrow">&rarr;</span>
+      </button>
+      <button class="gateway" data-key="3">
+        <span class="label"><span class="num">3</span>Euro Bundle</span>
+        <span class="arrow">&rarr;</span>
+      </button>
+      <button class="gateway" data-key="4">
+        <span class="label"><span class="num">4</span>UK Pro</span>
+        <span class="arrow">&rarr;</span>
+      </button>
+    </div>
+
+    <div class="status" id="status"></div>
+
+    <footer>
+      Clicking a button opens ChatGPT in a new tab and redirects this tab to the secure checkout page.
+    </footer>
+  </div>
+
+  <script>
+    // ============================================================
+    // CONFIG — paste your real Stripe Checkout URLs here.
+    // The defaults are harmless example.com placeholders so the
+    // page works out of the box. No paid services required.
+    // ============================================================
+    const GATEWAYS = {
+      "1": {
+        name: "GoPay Premium",
+        url: "https://example.com/checkout/gopay-premium"
+      },
+      "2": {
+        name: "PayPal Standard",
+        url: "https://example.com/checkout/paypal-standard"
+      },
+      "3": {
+        name: "Euro Bundle",
+        url: "https://example.com/checkout/euro-bundle"
+      },
+      "4": {
+        name: "UK Pro",
+        url: "https://example.com/checkout/uk-pro"
+      }
+    };
+
+    const CHATGPT_URL = "https://chatgpt.com/";
+
+    // ============================================================
+    // Behavior
+    // ============================================================
+    const statusEl = document.getElementById("status");
+
+    function showStatus(message) {
+      statusEl.textContent = message;
+      statusEl.classList.add("visible");
+    }
+
+    document.querySelectorAll("button.gateway").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const key = btn.getAttribute("data-key");
+        const gateway = GATEWAYS[key];
+        if (!gateway) return;
+
+        showStatus(
+          "Opening ChatGPT in a new tab, then redirecting to " + gateway.name + "..."
+        );
+
+        // Open ChatGPT in a new tab (this preserves the user's session there).
+        window.open(CHATGPT_URL, "_blank", "noopener");
+
+        // Redirect this tab to the checkout URL after a brief delay
+        // so the user notices the new tab opening.
+        setTimeout(() => {
+          window.location.href = gateway.url;
+        }, 600);
+      });
+    });
+  </script>
+</body>
+</html>
