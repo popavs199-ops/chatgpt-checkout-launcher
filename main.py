@@ -9,6 +9,9 @@ URLs are read from environment variables (or a local .env file):
   - STRIPE_PAYPAL_URL
   - STRIPE_EURO_URL
   - STRIPE_UK_URL
+
+If those variables are not set, the script falls back to harmless demo URLs
+so you can run it out of the box without any external/paid setup.
 """
 
 import os
@@ -52,6 +55,16 @@ def get_chrome_user_data_dir():
     return None
 
 
+# Demo fallback URLs so the script is runnable out of the box without
+# any Stripe / payment setup. Replace with real Stripe URLs via .env when ready.
+DEMO_URLS = {
+    "1": "https://example.com/checkout/gopay-premium",
+    "2": "https://example.com/checkout/paypal-standard",
+    "3": "https://example.com/checkout/euro-bundle",
+    "4": "https://example.com/checkout/uk-pro",
+}
+
+
 def launch_checkout():
     print("=== Digital Subscription Router ===")
     print("1. GoPay Premium")
@@ -70,12 +83,15 @@ def launch_checkout():
 
     target_url = gateway_mapping.get(choice)
 
-    if not target_url:
-        print("\n[Error] Configuration link not found!")
-        print("Make sure the matching STRIPE_*_URL is set in your environment "
-              "or in a .env file next to this script.")
-        time.sleep(5)
+    if choice not in DEMO_URLS:
+        print("\n[Error] Invalid choice. Please pick 1, 2, 3, or 4.")
+        time.sleep(3)
         return
+
+    if not target_url:
+        target_url = DEMO_URLS[choice]
+        print(f"\n[Demo mode] STRIPE_*_URL not set; using demo URL: {target_url}")
+        print("To use a real checkout, copy .env.example to .env and add your URLs.")
 
     print("\nInitializing automated browser environment...")
     options = Options()

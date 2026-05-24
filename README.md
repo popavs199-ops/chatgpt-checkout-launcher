@@ -12,24 +12,32 @@ A small Python/Selenium utility that:
 - Google Chrome installed
 - Selenium 4.6+ uses **Selenium Manager** to auto-download the matching `chromedriver`, so no manual driver setup is required.
 
-## Setup
+## Quick start (no setup, no payment account needed)
 
 ```bash
-# 1. Clone and enter the repo
 git clone https://github.com/popavs199-ops/chatgpt-checkout-launcher.git
 cd chatgpt-checkout-launcher
+pip install -r requirements.txt
+python main.py
+```
 
-# 2. (Recommended) create a virtual environment
+The script ships with **demo URLs** that point to `example.com`, so it runs out of
+the box. No Stripe account, no API keys, no paid services required.
+
+## Full setup (when you want real Stripe checkout)
+
+```bash
+# 1. (Recommended) create a virtual environment
 python -m venv .venv
 # Windows
 .venv\Scripts\activate
 # macOS / Linux
 source .venv/bin/activate
 
-# 3. Install dependencies
+# 2. Install dependencies
 pip install -r requirements.txt
 
-# 4. Configure your Stripe checkout URLs
+# 3. Configure your Stripe checkout URLs
 cp .env.example .env       # macOS / Linux
 copy .env.example .env     # Windows
 # Then edit .env and paste in your real Stripe URLs.
