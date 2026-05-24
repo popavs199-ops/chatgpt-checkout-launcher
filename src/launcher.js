@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Rexopay Checkout (v3)
 // @namespace    https://rexopay.eu/v3
-// @version      3.0.0
+// @version      3.0.1
 // @description  Adds a floating panel to chatgpt.com with quick links to regional Stripe checkout URLs and a token copy helper. Made by Thomas (@final_getsuga_tenshou - https://rexopay.eu/).
 // @author       Thomas (@final_getsuga_tenshou)
 // @homepage     https://rexopay.eu/
@@ -103,6 +103,10 @@
       border-radius: 14px;
       font: 14px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       box-shadow: 0 12px 32px rgba(0,0,0,0.35);
+      /* Re-enable interactivity. The host element has pointer-events:none
+         so it doesn't block clicks elsewhere on the page; but pointer-events
+         is inherited, so we have to opt our actual UI back in. */
+      pointer-events: auto;
     }
 
     .header {
@@ -230,6 +234,8 @@
       cursor: pointer;
       font: 600 13px/1 -apple-system, BlinkMacSystemFont, sans-serif;
       box-shadow: 0 8px 20px rgba(25,195,125,0.35);
+      /* Re-enable interactivity (see comment on .panel above). */
+      pointer-events: auto;
     }
     .mini:hover { background: #15a368; }
   `;
@@ -376,7 +382,7 @@
     // Visible version badge - so the user can verify which build they have
     const versionTag = document.createElement('span');
     versionTag.className = 'version-tag';
-    versionTag.textContent = 'v3.0.0';
+    versionTag.textContent = 'v3.0.1';
     title.appendChild(versionTag);
 
     const minimize = document.createElement('button');
@@ -522,7 +528,7 @@
     try { collapsed = localStorage.getItem('gpcl-collapsed') || '0'; } catch (_) {}
     togglePanel(collapsed !== '1');
     console.log(
-      '%c[Rexopay Checkout v3.0.0]%c ready - made by Thomas ' +
+      '%c[Rexopay Checkout v3.0.1]%c ready - made by Thomas ' +
       '(@final_getsuga_tenshou) - https://rexopay.eu/',
       'background:#4ade80;color:#061a12;padding:2px 6px;border-radius:4px;font-weight:bold;',
       'color:inherit;'
