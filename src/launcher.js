@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         ChatGPT Checkout Launcher
-// @namespace    https://rexopay.eu/
-// @version      2.2.1
+// @name         Rexopay Checkout (v3)
+// @namespace    https://rexopay.eu/v3
+// @version      3.0.0
 // @description  Adds a floating panel to chatgpt.com with quick links to regional Stripe checkout URLs and a token copy helper. Made by Thomas (@final_getsuga_tenshou - https://rexopay.eu/).
 // @author       Thomas (@final_getsuga_tenshou)
 // @homepage     https://rexopay.eu/
@@ -129,6 +129,16 @@
     .brand-sep {
       color: #444b5e;
       font-weight: 400;
+    }
+    .version-tag {
+      margin-left: auto;
+      margin-right: 6px;
+      padding: 2px 7px;
+      background: #4ade80;
+      color: #061a12;
+      border-radius: 99px;
+      font: 700 10px/1 -apple-system, sans-serif;
+      letter-spacing: 0.04em;
     }
 
     .min-toggle {
@@ -363,6 +373,12 @@
     title.appendChild(sep);
     title.appendChild(sub);
 
+    // Visible version badge - so the user can verify which build they have
+    const versionTag = document.createElement('span');
+    versionTag.className = 'version-tag';
+    versionTag.textContent = 'v3.0.0';
+    title.appendChild(versionTag);
+
     const minimize = document.createElement('button');
     minimize.className = 'min-toggle';
     minimize.title = 'Minimize';
@@ -506,8 +522,10 @@
     try { collapsed = localStorage.getItem('gpcl-collapsed') || '0'; } catch (_) {}
     togglePanel(collapsed !== '1');
     console.log(
-      '[ChatGPT Checkout Launcher] v2.2.1 ready (Shadow DOM) - made by Thomas ' +
-      '(@final_getsuga_tenshou) - https://rexopay.eu/'
+      '%c[Rexopay Checkout v3.0.0]%c ready - made by Thomas ' +
+      '(@final_getsuga_tenshou) - https://rexopay.eu/',
+      'background:#4ade80;color:#061a12;padding:2px 6px;border-radius:4px;font-weight:bold;',
+      'color:inherit;'
     );
   }
 
