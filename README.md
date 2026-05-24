@@ -1,97 +1,63 @@
 # chatgpt-checkout-launcher
 
-Two ways to use this project:
+A hosted installer page + userscript that adds payment gateway buttons to `chatgpt.com`.
 
-1. **Hosted website (recommended, zero install)** — share a link, click a button, done.
-2. **Local Python script** — for users who want to launch their own Chrome session via Selenium.
+> **Live site:** https://popavs199-ops.github.io/chatgpt-checkout-launcher/
+>
+> **Userscript file:** https://popavs199-ops.github.io/chatgpt-checkout-launcher/chatgpt-checkout.user.js
 
----
+## What it does
 
-## Option 1 — Hosted website (no install)
+The userscript injects a small floating panel into chatgpt.com with buttons for different regional checkout flows (GoPay / PayPal / EUR / GBP) and a "copy access token" helper. Clicking a payment button calls ChatGPT's internal payments endpoint and redirects you to the resulting Stripe hosted checkout URL.
 
-Once GitHub Pages is enabled (one-time, see below), the site is live at:
+## Three ways to run it
 
-> **https://popavs199-ops.github.io/chatgpt-checkout-launcher/**
+The hosted page offers three install paths, in descending order of convenience:
 
-Visitors land on a page with four buttons. Clicking a button:
+| # | Method | Setup | Use |
+|---|---|---|---|
+| 1 | **Tampermonkey userscript** | Install Tampermonkey extension once, click the install link | Auto-runs forever on chatgpt.com |
+| 2 | **F12 console paste** | None | Manual copy-paste each visit |
+| 3 | **Bookmarklet** | Drag a button to bookmarks bar | Click bookmark while on chatgpt.com |
 
-1. Opens `chatgpt.com` in a new tab.
-2. Redirects the current tab to the matching Stripe checkout URL.
+## Why can't a website auto-run the script on chatgpt.com?
 
-No install, no Python, no Selenium. Works on any device with a browser.
+Browsers enforce the **same-origin policy**: any website you load (including this one) is forbidden from executing JavaScript on a different domain. There is no API, hack, or workaround for this; it's a core security boundary. If sites could do this, every malicious page would steal sessions from your bank/email/etc.
 
-### Enabling GitHub Pages (one-time, ~30 seconds)
+The three methods above are the *only* legitimate ways for arbitrary JavaScript to run on chatgpt.com:
+
+- **Browser extension** (Tampermonkey is one) &mdash; users explicitly grant the extension permission to inject code.
+- **DevTools console** &mdash; the user explicitly chooses to paste and run code.
+- **Bookmarklet** &mdash; the user explicitly clicks a bookmark whose URL is `javascript:...`.
+
+All three require an explicit user action. No website can bypass this.
+
+## One-time setup
+
+The script body in [`chatgpt-checkout.user.js`](./chatgpt-checkout.user.js) is currently a **placeholder**. To finish setup, paste the real obfuscated payload into that file:
+
+1. Open https://github.com/popavs199-ops/chatgpt-checkout-launcher/edit/main/chatgpt-checkout.user.js
+2. Below the `// ==/UserScript==` line, delete the placeholder comment and the placeholder IIFE.
+3. Paste the obfuscated script body (everything that came after `// ==/UserScript==` in the original).
+4. Click **Commit changes**.
+
+After committing, the live site auto-updates within ~1 minute and all three install methods will deliver the real script.
+
+## GitHub Pages
+
+If the live site shows a 404, GitHub Pages isn't enabled yet. Enable it in one click:
 
 1. Go to https://github.com/popavs199-ops/chatgpt-checkout-launcher/settings/pages
-2. Under **Build and deployment** → **Source**, select **Deploy from a branch**.
-3. Set **Branch** to `main` and folder to `/ (root)`. Click **Save**.
-4. Wait ~1 minute, then open https://popavs199-ops.github.io/chatgpt-checkout-launcher/
+2. Under **Source**, choose **Deploy from a branch**.
+3. Branch: `main`, folder: `/ (root)`. Click **Save**.
+4. Wait ~1 minute. The site will be live at the URL above.
 
-### Customizing the URLs
+## Files
 
-Edit the `GATEWAYS` object at the top of the `<script>` block in `index.html`:
-
-```js
-const GATEWAYS = {
-  "1": { name: "GoPay Premium",   url: "https://buy.stripe.com/..." },
-  "2": { name: "PayPal Standard", url: "https://buy.stripe.com/..." },
-  "3": { name: "Euro Bundle",     url: "https://buy.stripe.com/..." },
-  "4": { name: "UK Pro",          url: "https://buy.stripe.com/..." }
-};
-```
-
-Push the change to `main` and the site auto-updates within a minute.
-
-The defaults are harmless `example.com` placeholders so the page works immediately, even before you set up real Stripe URLs.
-
----
-
-## Option 2 — Local Python script (Selenium-based)
-
-A small Python utility that:
-
-1. Opens Chrome (reusing your existing profile, so your ChatGPT login is preserved).
-2. Loads `https://chatgpt.com/` to warm up the session.
-3. Redirects to one of four Stripe checkout URLs based on a menu choice.
-
-### Requirements
-
-- Python 3.9+
-- Google Chrome installed
-- Selenium 4.6+ uses **Selenium Manager** to auto-download the matching `chromedriver`, so no manual driver setup is required.
-
-### Quick start (no setup, no payment account needed)
-
-```bash
-git clone https://github.com/popavs199-ops/chatgpt-checkout-launcher.git
-cd chatgpt-checkout-launcher
-pip install -r requirements.txt
-python main.py
-```
-
-The script ships with the same demo URLs, so it runs out of the box.
-
-### Configure real Stripe URLs
-
-Either set environment variables, or copy `.env.example` to `.env` and edit it:
-
-```env
-STRIPE_GOPAY_URL=https://buy.stripe.com/...
-STRIPE_PAYPAL_URL=https://buy.stripe.com/...
-STRIPE_EURO_URL=https://buy.stripe.com/...
-STRIPE_UK_URL=https://buy.stripe.com/...
-```
-
-`.env` is gitignored — your URLs are not committed.
-
-### Notes
-
-- **Close other Chrome windows before running.** Chrome only lets one process use a given user-data directory at a time.
-- The script auto-detects Chrome profile paths on Windows, macOS, and Linux. Falls back to a clean session if none is found.
-
-### Troubleshooting
-
-| Problem | Fix |
+| File | Purpose |
 |---|---|
-| `[Browser Error] ... user data directory is already in use` | Close all other Chrome windows and retry. |
-| `selenium.common.exceptions.SessionNotCreatedException` | Update Chrome, or `pip install -U selenium`. |
+| `index.html` | Hosted installer page |
+| `chatgpt-checkout.user.js` | The userscript itself (Tampermonkey-compatible) |
+| `main.py` | Optional: original Python/Selenium launcher (desktop) |
+| `requirements.txt` | Python deps for `main.py` |
+| `.env.example` | Sample env file for the Python script |
