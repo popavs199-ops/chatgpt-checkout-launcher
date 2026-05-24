@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Digital Subscription Router</title>
-  <meta name="description" content="Pick a subscription gateway and proceed to secure checkout." />
+  <title>ChatGPT Checkout Launcher</title>
+  <meta name="description" content="Three ways to run the ChatGPT checkout launcher script on chatgpt.com." />
   <style>
     :root {
       --bg: #0e0f13;
@@ -15,6 +15,8 @@
       --muted: #8b8f9c;
       --accent: #19c37d;
       --accent-hover: #15a368;
+      --warn: #f5a623;
+      --warn-bg: rgba(245, 166, 35, 0.1);
     }
 
     * { box-sizing: border-box; }
@@ -22,18 +24,16 @@
     body {
       margin: 0;
       min-height: 100vh;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background: var(--bg);
       color: var(--text);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
+      padding: 32px 16px;
+      line-height: 1.55;
     }
 
     .container {
-      width: 100%;
-      max-width: 520px;
+      max-width: 720px;
+      margin: 0 auto;
     }
 
     header {
@@ -54,189 +54,268 @@
       margin: 0;
     }
 
-    .buttons {
-      display: grid;
-      gap: 12px;
+    .notice {
+      background: var(--warn-bg);
+      border: 1px solid rgba(245, 166, 35, 0.3);
+      color: #f5d28a;
+      padding: 14px 16px;
+      border-radius: 10px;
+      font-size: 14px;
+      margin-bottom: 28px;
     }
 
-    button.gateway {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      width: 100%;
-      padding: 18px 22px;
+    .notice strong { color: var(--warn); }
+
+    .notice code {
+      background: rgba(0,0,0,0.3);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+
+    .option {
       background: var(--card);
-      color: var(--text);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      font-size: 16px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background 0.15s, border-color 0.15s, transform 0.05s;
-      text-align: left;
-      font-family: inherit;
+      border-radius: 14px;
+      padding: 22px 24px;
+      margin-bottom: 16px;
     }
 
-    button.gateway:hover {
-      background: var(--card-hover);
-      border-color: var(--accent);
-    }
-
-    button.gateway:active {
-      transform: scale(0.99);
-    }
-
-    button.gateway .label {
+    .option h2 {
+      font-size: 18px;
+      margin: 0 0 6px;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
     }
 
-    button.gateway .num {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
+    .option h2 .badge {
       background: var(--accent);
       color: #fff;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 13px;
+      font-size: 11px;
       font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 99px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
     }
 
-    button.gateway .arrow {
+    .option p {
       color: var(--muted);
-      font-size: 18px;
+      margin: 0 0 16px;
+      font-size: 14px;
     }
 
-    button.gateway:hover .arrow {
-      color: var(--accent);
+    .option ol, .option ul {
+      margin: 0 0 16px;
+      padding-left: 22px;
+      font-size: 14px;
+      color: var(--text);
     }
 
-    footer {
-      margin-top: 28px;
-      text-align: center;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.6;
-    }
+    .option li { margin-bottom: 6px; }
 
-    footer a {
+    .option a {
       color: var(--accent);
       text-decoration: none;
     }
 
-    footer a:hover {
-      text-decoration: underline;
+    .option a:hover { text-decoration: underline; }
+
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
     }
 
-    .status {
-      margin-top: 16px;
-      padding: 12px 16px;
-      background: var(--card);
-      border: 1px solid var(--border);
+    button, .btn {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 11px 18px;
       border-radius: 10px;
       font-size: 14px;
-      color: var(--muted);
-      display: none;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      text-decoration: none;
+      display: inline-block;
+      transition: background 0.15s;
     }
 
-    .status.visible {
-      display: block;
+    button:hover, .btn:hover { background: var(--accent-hover); }
+
+    button.secondary, .btn.secondary {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
     }
+
+    button.secondary:hover, .btn.secondary:hover {
+      background: var(--card-hover);
+      border-color: var(--accent);
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #1f2230;
+      border: 1px solid var(--accent);
+      color: var(--text);
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 14px;
+      opacity: 0;
+      transition: opacity 0.2s, transform 0.2s;
+      pointer-events: none;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    code.inline {
+      background: rgba(255,255,255,0.06);
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 13px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    .bookmarklet {
+      display: inline-block;
+      background: var(--accent);
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: grab;
+      user-select: none;
+      font-size: 14px;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 32px;
+    }
+
+    footer a { color: var(--muted); }
   </style>
 </head>
 <body>
   <div class="container">
     <header>
-      <h1>Digital Subscription Router</h1>
-      <p class="subtitle">Choose your gateway to proceed to secure checkout.</p>
+      <h1>ChatGPT Checkout Launcher</h1>
+      <p class="subtitle">Three ways to run the script on chatgpt.com. Pick the one that matches how much setup you want.</p>
     </header>
 
-    <div class="buttons">
-      <button class="gateway" data-key="1">
-        <span class="label"><span class="num">1</span>GoPay Premium</span>
-        <span class="arrow">&rarr;</span>
-      </button>
-      <button class="gateway" data-key="2">
-        <span class="label"><span class="num">2</span>PayPal Standard</span>
-        <span class="arrow">&rarr;</span>
-      </button>
-      <button class="gateway" data-key="3">
-        <span class="label"><span class="num">3</span>Euro Bundle</span>
-        <span class="arrow">&rarr;</span>
-      </button>
-      <button class="gateway" data-key="4">
-        <span class="label"><span class="num">4</span>UK Pro</span>
-        <span class="arrow">&rarr;</span>
-      </button>
+    <div class="notice" id="setupNotice">
+      <strong>One-time setup needed:</strong> The hosted script file is currently a placeholder. To finish setup, paste your obfuscated script body into
+      <code>chatgpt-checkout.user.js</code> on GitHub. <a href="https://github.com/popavs199-ops/chatgpt-checkout-launcher/edit/main/chatgpt-checkout.user.js" target="_blank" rel="noopener" style="color:#f5a623;text-decoration:underline;">Open the file editor &rarr;</a>
     </div>
 
-    <div class="status" id="status"></div>
+    <!-- OPTION 1: Tampermonkey -->
+    <section class="option">
+      <h2>Option 1 &mdash; Tampermonkey <span class="badge">Recommended</span></h2>
+      <p>Install once, the script auto-runs every time you visit chatgpt.com. Most reliable way.</p>
+      <ol>
+        <li>Install the Tampermonkey browser extension: <a href="https://www.tampermonkey.net/" target="_blank" rel="noopener">tampermonkey.net</a></li>
+        <li>Click the install button below &mdash; Tampermonkey will pop up and ask you to confirm.</li>
+        <li>Visit <a href="https://chatgpt.com/" target="_blank" rel="noopener">chatgpt.com</a>. The buttons appear automatically.</li>
+      </ol>
+      <div class="btn-row">
+        <a class="btn" href="chatgpt-checkout.user.js">Install via Tampermonkey</a>
+      </div>
+    </section>
+
+    <!-- OPTION 2: F12 paste -->
+    <section class="option">
+      <h2>Option 2 &mdash; Paste in DevTools console</h2>
+      <p>No install. You paste the script manually each time you want to use it.</p>
+      <ol>
+        <li>Click <strong>Copy script</strong> below.</li>
+        <li>Click <strong>Open ChatGPT</strong> &mdash; opens chatgpt.com in a new tab.</li>
+        <li>On chatgpt.com, press <code class="inline">F12</code> (or <code class="inline">Cmd+Option+I</code> on Mac) to open DevTools.</li>
+        <li>Click the <strong>Console</strong> tab.</li>
+        <li>If Chrome shows a "self-XSS" warning, type <code class="inline">allow pasting</code> and press Enter once.</li>
+        <li>Paste with <code class="inline">Ctrl+V</code> and press <code class="inline">Enter</code>.</li>
+      </ol>
+      <div class="btn-row">
+        <button id="copyBtn">Copy script</button>
+        <a class="btn secondary" href="https://chatgpt.com/" target="_blank" rel="noopener">Open ChatGPT</a>
+      </div>
+    </section>
+
+    <!-- OPTION 3: Bookmarklet -->
+    <section class="option">
+      <h2>Option 3 &mdash; Bookmarklet</h2>
+      <p>Drag the button below to your browser's bookmarks bar. Then visit chatgpt.com and click the bookmark to inject the script.</p>
+      <ul>
+        <li>Show the bookmarks bar first if it's hidden (<code class="inline">Ctrl+Shift+B</code>).</li>
+        <li>Drag this button up to your bookmarks bar:</li>
+      </ul>
+      <a id="bookmarklet" class="bookmarklet" draggable="true" href="javascript:void(0)">&#128279; ChatGPT Launcher</a>
+      <p style="margin-top:14px;font-size:13px;">Then on chatgpt.com just click the bookmark.</p>
+    </section>
 
     <footer>
-      Clicking a button opens ChatGPT in a new tab and redirects this tab to the secure checkout page.
+      Source: <a href="https://github.com/popavs199-ops/chatgpt-checkout-launcher" target="_blank" rel="noopener">github.com/popavs199-ops/chatgpt-checkout-launcher</a>
     </footer>
   </div>
 
+  <div class="toast" id="toast"></div>
+
   <script>
-    // ============================================================
-    // CONFIG — paste your real Stripe Checkout URLs here.
-    // The defaults are harmless example.com placeholders so the
-    // page works out of the box. No paid services required.
-    // ============================================================
-    const GATEWAYS = {
-      "1": {
-        name: "GoPay Premium",
-        url: "https://example.com/checkout/gopay-premium"
-      },
-      "2": {
-        name: "PayPal Standard",
-        url: "https://example.com/checkout/paypal-standard"
-      },
-      "3": {
-        name: "Euro Bundle",
-        url: "https://example.com/checkout/euro-bundle"
-      },
-      "4": {
-        name: "UK Pro",
-        url: "https://example.com/checkout/uk-pro"
-      }
-    };
+    const SCRIPT_URL = "chatgpt-checkout.user.js";
+    const toast = document.getElementById("toast");
 
-    const CHATGPT_URL = "https://chatgpt.com/";
-
-    // ============================================================
-    // Behavior
-    // ============================================================
-    const statusEl = document.getElementById("status");
-
-    function showStatus(message) {
-      statusEl.textContent = message;
-      statusEl.classList.add("visible");
+    function showToast(msg, ok = true) {
+      toast.textContent = msg;
+      toast.style.borderColor = ok ? "var(--accent)" : "#ef4444";
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 2400);
     }
 
-    document.querySelectorAll("button.gateway").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const key = btn.getAttribute("data-key");
-        const gateway = GATEWAYS[key];
-        if (!gateway) return;
-
-        showStatus(
-          "Opening ChatGPT in a new tab, then redirecting to " + gateway.name + "..."
-        );
-
-        // Open ChatGPT in a new tab (this preserves the user's session there).
-        window.open(CHATGPT_URL, "_blank", "noopener");
-
-        // Redirect this tab to the checkout URL after a brief delay
-        // so the user notices the new tab opening.
-        setTimeout(() => {
-          window.location.href = gateway.url;
-        }, 600);
-      });
+    // ---- Option 2: Copy script ----
+    document.getElementById("copyBtn").addEventListener("click", async () => {
+      try {
+        const resp = await fetch(SCRIPT_URL, { cache: "no-store" });
+        if (!resp.ok) throw new Error("HTTP " + resp.status);
+        const text = await resp.text();
+        await navigator.clipboard.writeText(text);
+        showToast("Script copied to clipboard.");
+      } catch (e) {
+        showToast("Copy failed: " + e.message, false);
+      }
     });
+
+    // ---- Option 3: Build the bookmarklet href dynamically ----
+    // The bookmarklet fetches the latest script from this site and evals it.
+    (function buildBookmarklet() {
+      const link = document.getElementById("bookmarklet");
+      const absUrl = new URL(SCRIPT_URL, window.location.href).href;
+      const code = `(function(){fetch(${JSON.stringify(absUrl)},{cache:'no-store'}).then(r=>r.text()).then(t=>{const s=document.createElement('script');s.textContent=t;document.documentElement.appendChild(s);}).catch(e=>alert('Launcher failed: '+e.message));})();`;
+      link.href = "javascript:" + encodeURIComponent(code);
+    })();
+
+    // ---- Hide setup notice if the script file appears to contain a real payload ----
+    // (Heuristic: a real obfuscated payload is much larger than the placeholder.)
+    (async function checkSetup() {
+      try {
+        const resp = await fetch(SCRIPT_URL, { cache: "no-store" });
+        const text = await resp.text();
+        if (text.length > 8000 && !text.includes("This is a placeholder")) {
+          document.getElementById("setupNotice").style.display = "none";
+        }
+      } catch (_) { /* ignore */ }
+    })();
   </script>
 </body>
 </html>
