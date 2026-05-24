@@ -356,11 +356,36 @@
     statusEl.textContent = 'Ready.';
     panel.appendChild(statusEl);
 
-    // Credit footer
+    // Credit footer. Uses inline styles + explicit DOM nodes (instead of
+    // innerHTML and a class) because ChatGPT's stylesheet aggressively resets
+    // anchor colors. Inline style with !important on the <a> wins.
     const credit = document.createElement('div');
     credit.id = 'gpcl-credit';
-    credit.innerHTML =
-      'made by Thomas <a href="https://rexopay.eu/" target="_blank" rel="noopener">@final_getsuga_tenshou</a>';
+    credit.setAttribute(
+      'style',
+      'margin: 10px 0 0 0 !important;' +
+      'padding: 4px 0 0 0 !important;' +
+      'border-top: 1px solid #2a2d3a !important;' +
+      'text-align: center !important;' +
+      'font: 400 11px/1.4 -apple-system, BlinkMacSystemFont, sans-serif !important;' +
+      'color: #c9c9d4 !important;' +
+      'opacity: 1 !important; visibility: visible !important;'
+    );
+    credit.appendChild(document.createTextNode('made by Thomas '));
+    const creditLink = document.createElement('a');
+    creditLink.href = 'https://rexopay.eu/';
+    creditLink.target = '_blank';
+    creditLink.rel = 'noopener';
+    creditLink.textContent = '@final_getsuga_tenshou';
+    creditLink.setAttribute(
+      'style',
+      'color: #4ade80 !important;' +
+      'text-decoration: underline !important;' +
+      'font-weight: 600 !important;' +
+      'background: transparent !important;' +
+      'opacity: 1 !important; visibility: visible !important;'
+    );
+    credit.appendChild(creditLink);
     panel.appendChild(credit);
 
     makeDraggable(panel, header);

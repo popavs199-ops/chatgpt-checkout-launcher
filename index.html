@@ -154,39 +154,18 @@
       </div>
     </section>
 
-    <!-- OPTION 2: Bookmarklet -->
+    <!-- OPTION 2: Activate -->
     <section class="option">
-      <h2>Option 2 &mdash; Bookmarklet</h2>
-      <p>No extension needed. Drag the button below to your browser's bookmarks bar, then click it while on chatgpt.com.</p>
-      <ul>
-        <li>Show the bookmarks bar first if it is hidden (<code class="inline">Ctrl+Shift+B</code>).</li>
-        <li>Drag this button up to your bookmarks bar:</li>
-      </ul>
-      <a id="bookmarklet" class="bookmarklet" draggable="true" href="javascript:void(0)">&#128279; ChatGPT Launcher</a>
-      <p style="margin-top:14px;font-size:13px;">Then go to chatgpt.com and click the bookmark.</p>
+      <h2>Option 2 &mdash; Press to activate</h2>
+      <p>Once you've installed via Tampermonkey above, press the button below to open ChatGPT &mdash; the panel appears automatically.</p>
+      <div class="btn-row">
+        <a class="btn" href="https://chatgpt.com/" target="_blank" rel="noopener">Press to activate</a>
+      </div>
     </section>
 
     <footer>
       <a href="https://rexopay.eu/" target="_blank" rel="noopener">made by Thomas (@final_getsuga_tenshou)</a>
-      &nbsp;&middot;&nbsp;
-      <a href="https://chatgpt.com/" target="_blank" rel="noopener">Open ChatGPT &rarr;</a>
     </footer>
   </div>
-
-  <script>
-    // Build the bookmarklet href dynamically. The bookmarklet fetches the
-    // (obfuscated) launcher and evaluates it inside chatgpt.com's context.
-    (function buildBookmarklet() {
-      var link = document.getElementById("bookmarklet");
-      var absUrl = new URL("chatgpt-checkout.user.js", window.location.href).href;
-      var code =
-        "(function(){fetch(" + JSON.stringify(absUrl) +
-        ",{cache:'no-store'}).then(function(r){return r.text();})" +
-        ".then(function(t){var s=document.createElement('script');" +
-        "s.textContent=t;document.documentElement.appendChild(s);})" +
-        ".catch(function(e){alert('Launcher failed: '+e.message);});})();";
-      link.href = "javascript:" + encodeURIComponent(code);
-    })();
-  </script>
 </body>
 </html>
