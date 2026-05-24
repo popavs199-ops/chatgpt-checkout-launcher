@@ -13,6 +13,10 @@ __pycache__/
 venv/
 env/
 
+# Build artifacts
+node_modules/
+package-lock.json
+
 # IDE
 .idea/
 .vscode/
