@@ -80,27 +80,38 @@
 
     .option li { margin-bottom: 6px; }
 
-    .option a { color: var(--accent); text-decoration: none; }
-    .option a:hover { text-decoration: underline; }
+    /* Inline-content links (in <p>, <ol>, <ul>) - green */
+    .option p a,
+    .option ol a,
+    .option ul a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .option p a:hover,
+    .option ol a:hover,
+    .option ul a:hover { text-decoration: underline; }
 
     .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
 
+    /* Use !important so nothing else can override the white text on green button */
+    a.btn,
     .btn {
-      background: var(--accent);
-      color: #fff;
+      background: var(--accent) !important;
+      color: #ffffff !important;
       border: none;
-      padding: 11px 18px;
+      padding: 12px 22px;
       border-radius: 10px;
-      font-size: 14px;
-      font-weight: 600;
+      font-size: 15px !important;
+      font-weight: 600 !important;
       cursor: pointer;
       font-family: inherit;
-      text-decoration: none;
+      text-decoration: none !important;
       display: inline-block;
       transition: background 0.15s;
     }
 
-    .btn:hover { background: var(--accent-hover); }
+    a.btn:hover,
+    .btn:hover { background: var(--accent-hover) !important; }
 
     .bookmarklet {
       display: inline-block;
@@ -136,7 +147,7 @@
 <body>
   <div class="container">
     <header>
-      <h1>ChatGPT Checkout Launcher</h1>
+      <h1><span style="color:#4ade80;font-weight:700;">REXOPAY</span> &middot; ChatGPT Checkout Launcher</h1>
       <p class="subtitle">Install once, then visit ChatGPT and the checkout panel appears.</p>
     </header>
 

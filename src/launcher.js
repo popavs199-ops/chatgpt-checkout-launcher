@@ -113,8 +113,20 @@
       cursor: move !important;
     }
     #gpcl-title {
-      font: 600 13px/1.2 -apple-system, BlinkMacSystemFont, sans-serif !important;
+      font: 600 14px/1.2 -apple-system, BlinkMacSystemFont, sans-serif !important;
       color: #e8e9ee !important;
+      display: flex !important;
+      align-items: baseline !important;
+      gap: 6px !important;
+    }
+    #gpcl-title .gpcl-brand {
+      color: #4ade80 !important;
+      font-weight: 700 !important;
+      letter-spacing: 0.02em !important;
+    }
+    #gpcl-title .gpcl-brand-sep {
+      color: #444b5e !important;
+      font-weight: 400 !important;
     }
     #gpcl-mini-toggle {
       background: transparent !important;
@@ -311,7 +323,18 @@
     header.id = 'gpcl-header';
     const title = document.createElement('span');
     title.id = 'gpcl-title';
-    title.textContent = 'Checkout Launcher';
+    // Branded title: "REXOPAY · Checkout"
+    const brand = document.createElement('span');
+    brand.className = 'gpcl-brand';
+    brand.textContent = 'REXOPAY';
+    const sep = document.createElement('span');
+    sep.className = 'gpcl-brand-sep';
+    sep.textContent = '\u00B7'; // middle dot
+    const sub = document.createElement('span');
+    sub.textContent = 'Checkout';
+    title.appendChild(brand);
+    title.appendChild(sep);
+    title.appendChild(sub);
     const minimize = document.createElement('button');
     minimize.id = 'gpcl-mini-toggle';
     minimize.title = 'Minimize';
@@ -395,7 +418,7 @@
   function buildMiniBtn() {
     miniBtn = document.createElement('button');
     miniBtn.id = 'gpcl-mini';
-    miniBtn.textContent = '💳 Checkout';
+    miniBtn.textContent = '💳 Rexopay';
     miniBtn.style.display = 'none';
     miniBtn.onclick = () => togglePanel(true);
     document.body.appendChild(miniBtn);
