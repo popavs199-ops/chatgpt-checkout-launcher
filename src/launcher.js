@@ -382,33 +382,55 @@
     // Credit footer. Uses inline styles + explicit DOM nodes (instead of
     // innerHTML and a class) because ChatGPT's stylesheet aggressively resets
     // anchor colors. Inline style with !important on the <a> wins.
+    //
+    // Two lines:
+    //   1. https://rexopay.eu/
+    //   2. made by Thomas - @final_getsuga_tenshou (Telegram link)
     const credit = document.createElement('div');
     credit.id = 'gpcl-credit';
     credit.setAttribute(
       'style',
       'margin: 10px 0 0 0 !important;' +
-      'padding: 4px 0 0 0 !important;' +
+      'padding: 6px 0 0 0 !important;' +
       'border-top: 1px solid #2a2d3a !important;' +
       'text-align: center !important;' +
-      'font: 400 11px/1.4 -apple-system, BlinkMacSystemFont, sans-serif !important;' +
+      'font: 400 11px/1.5 -apple-system, BlinkMacSystemFont, sans-serif !important;' +
       'color: #c9c9d4 !important;' +
       'opacity: 1 !important; visibility: visible !important;'
     );
-    credit.appendChild(document.createTextNode('made by Thomas '));
-    const creditLink = document.createElement('a');
-    creditLink.href = 'https://rexopay.eu/';
-    creditLink.target = '_blank';
-    creditLink.rel = 'noopener';
-    creditLink.textContent = '@final_getsuga_tenshou';
-    creditLink.setAttribute(
-      'style',
+
+    const linkStyle =
       'color: #4ade80 !important;' +
       'text-decoration: underline !important;' +
       'font-weight: 600 !important;' +
       'background: transparent !important;' +
-      'opacity: 1 !important; visibility: visible !important;'
-    );
-    credit.appendChild(creditLink);
+      'opacity: 1 !important; visibility: visible !important;';
+
+    // Line 1: rexopay.eu
+    const line1 = document.createElement('div');
+    line1.setAttribute('style', 'display: block !important; margin: 0 0 2px 0 !important;');
+    const siteLink = document.createElement('a');
+    siteLink.href = 'https://rexopay.eu/';
+    siteLink.target = '_blank';
+    siteLink.rel = 'noopener';
+    siteLink.textContent = 'https://rexopay.eu/';
+    siteLink.setAttribute('style', linkStyle);
+    line1.appendChild(siteLink);
+
+    // Line 2: made by Thomas - @final_getsuga_tenshou (Telegram)
+    const line2 = document.createElement('div');
+    line2.setAttribute('style', 'display: block !important;');
+    line2.appendChild(document.createTextNode('made by Thomas '));
+    const tgLink = document.createElement('a');
+    tgLink.href = 'https://t.me/final_getsuga_tenshou';
+    tgLink.target = '_blank';
+    tgLink.rel = 'noopener';
+    tgLink.textContent = '@final_getsuga_tenshou';
+    tgLink.setAttribute('style', linkStyle);
+    line2.appendChild(tgLink);
+
+    credit.appendChild(line1);
+    credit.appendChild(line2);
     panel.appendChild(credit);
 
     makeDraggable(panel, header);
