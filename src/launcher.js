@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ChatGPT Checkout Launcher
 // @namespace    https://rexopay.eu/
-// @version      2.2.0
+// @version      2.2.1
 // @description  Adds a floating panel to chatgpt.com with quick links to regional Stripe checkout URLs and a token copy helper. Made by Thomas (@final_getsuga_tenshou - https://rexopay.eu/).
 // @author       Thomas (@final_getsuga_tenshou)
 // @homepage     https://rexopay.eu/
@@ -83,7 +83,10 @@
   const css = `
     :host {
       all: initial;
-      contain: layout style;
+      /* IMPORTANT: do NOT set "contain: layout" here.
+         It would make the host the containing block for the panel
+         position:fixed, breaking the right:20px / bottom:20px placement
+         and pushing the panel off-screen. */
     }
     *, *::before, *::after { box-sizing: border-box; }
 
@@ -503,7 +506,7 @@
     try { collapsed = localStorage.getItem('gpcl-collapsed') || '0'; } catch (_) {}
     togglePanel(collapsed !== '1');
     console.log(
-      '[ChatGPT Checkout Launcher] v2.2.0 ready (Shadow DOM) - made by Thomas ' +
+      '[ChatGPT Checkout Launcher] v2.2.1 ready (Shadow DOM) - made by Thomas ' +
       '(@final_getsuga_tenshou) - https://rexopay.eu/'
     );
   }
