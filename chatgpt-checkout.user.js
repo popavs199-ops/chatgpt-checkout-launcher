@@ -11,27 +11,17 @@
 // @updateURL    https://popavs199-ops.github.io/chatgpt-checkout-launcher/chatgpt-checkout.user.js
 // ==/UserScript==
 
-/*
- * IMPORTANT: This is a placeholder. The actual obfuscated script body needs
- * to be pasted in below this comment by the repo owner. To do that:
- *
- *   1. Open this file on GitHub:
- *      https://github.com/popavs199-ops/chatgpt-checkout-launcher/edit/main/chatgpt-checkout.user.js
- *   2. Delete this entire comment block.
- *   3. Paste the obfuscated script body (everything that came after the
- *      // ==/UserScript== line in the original).
- *   4. Click "Commit changes".
- *
- * Why a placeholder? The raw obfuscated payload is ~70 KB of dense escape
- * sequences. Pasting it through this tool runs into encoding edge cases that
- * can silently corrupt the script. Pasting it directly through GitHub's web
- * editor preserves it byte-for-byte.
- */
+/* PASTE YOUR FULL OBFUSCATED SCRIPT BELOW THIS LINE.
+   - Keep the // ==UserScript== block above untouched.
+   - Replace this comment AND the placeholder IIFE below
+     with everything that came after `// ==/UserScript==`
+     in the original script you have.
+   - Save / commit. The hosted site auto-updates within ~1 min. */
 
 (function () {
   console.error(
-    "[ChatGPT Checkout Launcher] Placeholder script. Repo owner: paste the full " +
-    "obfuscated payload into chatgpt-checkout.user.js on GitHub. See the " +
-    "comment block at the top of this file for instructions."
+    "[ChatGPT Checkout Launcher] Placeholder script body. " +
+    "Replace this file's contents (everything below the // ==/UserScript== line) " +
+    "with the full obfuscated payload you have, then commit."
   );
 })();
