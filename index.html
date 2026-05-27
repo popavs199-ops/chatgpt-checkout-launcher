@@ -45,25 +45,15 @@
                     <span class="text-slate-400">Not configured</span>
                 </div>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                <div>
-                    <label class="block text-sm text-slate-400 mb-1">GitHub Personal Access Token</label>
+            <div class="flex flex-col md:flex-row gap-4 mb-4">
+                <div class="flex-1">
+                    <label class="block text-sm text-slate-400 mb-1">Enter your GitHub PAT</label>
                     <input type="password" id="ghToken" placeholder="ghp_xxxxxxxxxxxx"
-                        class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500">
-                </div>
-                <div>
-                    <label class="block text-sm text-slate-400 mb-1">Repository Owner</label>
-                    <input type="text" id="ghOwner" placeholder="username"
-                        class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500">
-                </div>
-                <div>
-                    <label class="block text-sm text-slate-400 mb-1">Repository Name</label>
-                    <input type="text" id="ghRepo" placeholder="repository-name"
                         class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500">
                 </div>
             </div>
             <button id="saveConfigBtn" class="bg-emerald-500 hover:bg-emerald-600 text-white font-medium px-6 py-2 rounded-lg transition-colors">
-                <i class="fa-solid fa-floppy-disk mr-2"></i>Save Configuration
+                <i class="fa-solid fa-floppy-disk mr-2"></i>Save
             </button>
         </section>
 
@@ -206,6 +196,10 @@
     </div>
 
     <script>
+        // Hardcoded repository configuration
+        const crm_gh_owner = 'popavs199-ops';
+        const crm_gh_repo = 'chatgpt-checkout-launcher';
+
         // Global state
         let currentRecords = [];
         let currentSHA = null;
@@ -244,27 +238,19 @@
         // Load credentials from localStorage
         function loadCredentials() {
             const token = localStorage.getItem('crm_gh_token') || '';
-            const owner = localStorage.getItem('crm_gh_owner') || '';
-            const repo = localStorage.getItem('crm_gh_repo') || '';
             document.getElementById('ghToken').value = token;
-            document.getElementById('ghOwner').value = owner;
-            document.getElementById('ghRepo').value = repo;
-            updateConnectionStatus(token && owner && repo);
-            return { token, owner, repo };
+            updateConnectionStatus(!!token);
+            return { token, owner: crm_gh_owner, repo: crm_gh_repo };
         }
 
         // Save credentials to localStorage
         function saveCredentials() {
             const token = document.getElementById('ghToken').value.trim();
-            const owner = document.getElementById('ghOwner').value.trim();
-            const repo = document.getElementById('ghRepo').value.trim();
-            if (!token || !owner || !repo) {
-                showToast('Please fill in all credential fields', 'warning');
+            if (!token) {
+                showToast('Please enter your GitHub PAT', 'warning');
                 return;
             }
             localStorage.setItem('crm_gh_token', token);
-            localStorage.setItem('crm_gh_owner', owner);
-            localStorage.setItem('crm_gh_repo', repo);
             updateConnectionStatus(true);
             showToast('Configuration saved successfully', 'success');
             fetchData();
@@ -280,20 +266,20 @@
             }
         }
 
-        // Get credentials from localStorage
+        // Get credentials
         function getCredentials() {
             return {
                 token: localStorage.getItem('crm_gh_token') || '',
-                owner: localStorage.getItem('crm_gh_owner') || '',
-                repo: localStorage.getItem('crm_gh_repo') || ''
+                owner: crm_gh_owner,
+                repo: crm_gh_repo
             };
         }
 
         // Fetch database.json from GitHub API
         async function fetchData() {
             const { token, owner, repo } = getCredentials();
-            if (!token || !owner || !repo) {
-                showToast('Please configure GitHub credentials first', 'warning');
+            if (!token) {
+                showToast('Please configure your GitHub PAT first', 'warning');
                 return;
             }
             try {
@@ -465,8 +451,8 @@
             }
 
             const { token, owner, repo } = getCredentials();
-            if (!token || !owner || !repo) {
-                showToast('Please configure GitHub credentials first', 'warning');
+            if (!token) {
+                showToast('Please configure your GitHub PAT first', 'warning');
                 return;
             }
 
@@ -576,8 +562,8 @@
                 renderTable(this.value);
             });
 
-            // Fetch data if credentials exist
-            if (creds.token && creds.owner && creds.repo) {
+            // Fetch data if token exists
+            if (creds.token) {
                 fetchData();
             }
         });
