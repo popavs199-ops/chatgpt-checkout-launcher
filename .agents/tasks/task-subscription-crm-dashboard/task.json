@@ -1,0 +1,7 @@
+{
+  "task_id": "task-subscription-crm-dashboard",
+  "task_description": "Replace the existing chatgpt-checkout-launcher repository contents with a brand new GitHub-native Subscription Management CRM Dashboard featuring: prorating engine, live analytics, searchable data grid, promo codes, and GitHub Actions expiration alerts",
+  "status": "in_progress",
+  "feature_order": ["FEAT-001", "FEAT-002", "FEAT-003"],
+  "blocked_reason": null
+}
