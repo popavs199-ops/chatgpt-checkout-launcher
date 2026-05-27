@@ -1,0 +1,33 @@
+{
+  "id": "FEAT-003",
+  "type": "feat",
+  "description": "Create the GitHub Actions workflow for daily subscription expiration alerts via Discord/Telegram webhook",
+  "status": "pending",
+  "steps": [
+    "Create directory .github/workflows/ if it does not exist",
+    "Create .github/workflows/alerts.yml with the following configuration:",
+    "Set name to 'Subscription Expiration Alerts'",
+    "Configure triggers: schedule with cron '0 9 * * *' (daily at 9:00 AM UTC) and workflow_dispatch for manual triggering",
+    "Define a single job 'check-expirations' running on ubuntu-latest",
+    "Steps: 1) actions/checkout@v4 to get repo contents, 2) actions/setup-node@v4 with node-version 20, 3) Run inline Node.js script",
+    "The inline Node.js script should: read database.json from the filesystem using fs.readFileSync, parse JSON, filter for records where status is 'Active' AND endDate minus today equals exactly 2 days (48 hours), if any found send a formatted Discord webhook POST to the NOTIFICATION_WEBHOOK secret URL",
+    "The Discord webhook payload should include an embed with: title 'Subscription Expiration Alert', color (orange/warning), description listing each expiring client's email and end date, and a footer with the current date",
+    "Use the secrets.NOTIFICATION_WEBHOOK environment variable (env: WEBHOOK_URL: ${{ secrets.NOTIFICATION_WEBHOOK }})",
+    "Add error handling: if database.json is empty or no expirations found, log a message and exit cleanly without sending a webhook"
+  ],
+  "acceptance_criteria": [
+    ".github/workflows/alerts.yml exists and is valid YAML",
+    "Workflow triggers on schedule cron '0 9 * * *' and workflow_dispatch",
+    "Workflow checks out repo and runs Node.js script",
+    "Script reads database.json and filters for subscriptions expiring in exactly 2 days",
+    "Script sends Discord-formatted webhook POST with expiring client details",
+    "Script uses NOTIFICATION_WEBHOOK secret via environment variable",
+    "Script handles edge cases (empty database, no expirations) gracefully"
+  ],
+  "verification": [
+    "Run: python3 -c \"import yaml; y=yaml.safe_load(open('/projects/sandbox/chatgpt-checkout-launcher/.github/workflows/alerts.yml')); assert 'schedule' in y[True] or 'schedule' in y.get('on',{}); print('Valid YAML with schedule trigger')\" || python3 -c \"data=open('/projects/sandbox/chatgpt-checkout-launcher/.github/workflows/alerts.yml').read(); assert 'cron' in data; assert '0 9 * * *' in data; assert 'NOTIFICATION_WEBHOOK' in data; assert 'database.json' in data; assert 'workflow_dispatch' in data; print('All workflow checks pass')\"",
+    "Run: python3 -c \"data=open('/projects/sandbox/chatgpt-checkout-launcher/.github/workflows/alerts.yml').read(); assert 'checkout' in data; assert 'node' in data.lower() or 'setup-node' in data; assert 'Active' in data; print('Workflow structure checks pass')\""
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}
