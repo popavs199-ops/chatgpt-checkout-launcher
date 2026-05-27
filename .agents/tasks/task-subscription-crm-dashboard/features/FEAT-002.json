@@ -2,7 +2,7 @@
   "id": "FEAT-002",
   "type": "feat",
   "description": "Create the full CRM dashboard index.html with all features: dark mode UI, GitHub credentials config, subscription form with prorating engine, promo code system, real-time analytics, searchable data grid, and GitHub API integration for data persistence",
-  "status": "pending",
+  "status": "in_progress",
   "steps": [
     "Create index.html at repo root as a single-file HTML application with embedded CSS and JavaScript",
     "Include Tailwind CSS via CDN (https://cdn.tailwindcss.com) and Font Awesome 6.4.0 via CDN (https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css)",
