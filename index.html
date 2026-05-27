@@ -1,185 +1,586 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ChatGPT Checkout Launcher</title>
-  <meta name="description" content="Install the ChatGPT checkout launcher for chatgpt.com." />
-  <style>
-    :root {
-      --bg: #0e0f13;
-      --card: #161821;
-      --card-hover: #1f2230;
-      --border: #2a2d3a;
-      --text: #e8e9ee;
-      --muted: #8b8f9c;
-      --accent: #19c37d;
-      --accent-hover: #15a368;
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      padding: 32px 16px;
-      line-height: 1.55;
-    }
-
-    .container { max-width: 720px; margin: 0 auto; }
-
-    header { text-align: center; margin-bottom: 32px; }
-
-    h1 {
-      font-size: 28px;
-      font-weight: 600;
-      margin: 0 0 8px;
-      letter-spacing: -0.02em;
-    }
-
-    .subtitle { color: var(--muted); font-size: 15px; margin: 0; }
-
-    .option {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 22px 24px;
-      margin-bottom: 16px;
-    }
-
-    .option h2 {
-      font-size: 18px;
-      margin: 0 0 6px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .option h2 .badge {
-      background: var(--accent);
-      color: #fff;
-      font-size: 11px;
-      font-weight: 600;
-      padding: 3px 8px;
-      border-radius: 99px;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-    }
-
-    .option p { color: var(--muted); margin: 0 0 16px; font-size: 14px; }
-
-    .option ol, .option ul {
-      margin: 0 0 16px;
-      padding-left: 22px;
-      font-size: 14px;
-      color: var(--text);
-    }
-
-    .option li { margin-bottom: 6px; }
-
-    /* Inline-content links (in <p>, <ol>, <ul>) - green */
-    .option p a,
-    .option ol a,
-    .option ul a {
-      color: var(--accent);
-      text-decoration: none;
-    }
-    .option p a:hover,
-    .option ol a:hover,
-    .option ul a:hover { text-decoration: underline; }
-
-    .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
-
-    /* Use !important so nothing else can override the white text on green button */
-    a.btn,
-    .btn {
-      background: var(--accent) !important;
-      color: #ffffff !important;
-      border: none;
-      padding: 12px 22px;
-      border-radius: 10px;
-      font-size: 15px !important;
-      font-weight: 600 !important;
-      cursor: pointer;
-      font-family: inherit;
-      text-decoration: none !important;
-      display: inline-block;
-      transition: background 0.15s;
-    }
-
-    a.btn:hover,
-    .btn:hover { background: var(--accent-hover) !important; }
-
-    .bookmarklet {
-      display: inline-block;
-      background: var(--accent);
-      color: #fff;
-      padding: 10px 16px;
-      border-radius: 10px;
-      font-weight: 600;
-      text-decoration: none;
-      cursor: grab;
-      user-select: none;
-      font-size: 14px;
-    }
-
-    code.inline {
-      background: rgba(255,255,255,0.06);
-      padding: 1px 6px;
-      border-radius: 4px;
-      font-size: 13px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-    }
-
-    footer {
-      text-align: center;
-      color: var(--muted);
-      font-size: 12px;
-      margin-top: 32px;
-    }
-
-    footer a { color: var(--muted); }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscription Management CRM</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+        .toast {
+            animation: slideIn 0.3s ease-out;
+        }
+        @keyframes slideIn {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
 </head>
-<body>
-  <div class="container">
-    <header>
-      <h1><span style="color:#4ade80;font-weight:700;">REXOPAY</span> &middot; ChatGPT Checkout Launcher</h1>
-      <p class="subtitle">Install once, then visit ChatGPT and the checkout panel appears.</p>
-    </header>
+<body class="bg-slate-950 text-white min-h-screen">
+    <!-- Toast Container -->
+    <div id="toastContainer" class="fixed top-4 right-4 z-50 space-y-2"></div>
 
-    <!-- OPTION 1: Tampermonkey -->
-    <section class="option">
-      <h2>Option 1 &mdash; Tampermonkey <span class="badge">Recommended</span></h2>
-      <p>Install once, runs forever on chatgpt.com. Auto-updates when there's a new version.</p>
-      <ol>
-        <li>Install the Tampermonkey browser extension: <a href="https://www.tampermonkey.net/" target="_blank" rel="noopener">tampermonkey.net</a></li>
-        <li>Click the install button below &mdash; Tampermonkey will pop up and ask you to confirm.</li>
-        <li>Visit <a href="https://chatgpt.com/" target="_blank" rel="noopener">chatgpt.com</a>. The panel appears in the bottom-right.</li>
-      </ol>
-      <div class="btn-row">
-        <a class="btn" href="chatgpt-checkout.user.js">Install via Tampermonkey</a>
-      </div>
-    </section>
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Header -->
+        <header class="mb-8">
+            <h1 class="text-3xl font-bold text-white flex items-center gap-3">
+                <i class="fa-solid fa-chart-line text-emerald-500"></i>
+                Subscription Management CRM
+            </h1>
+            <p class="text-slate-400 mt-2">Manage client subscriptions, track revenue, and monitor expirations</p>
+        </header>
 
-    <!-- OPTION 2: Activate -->
-    <section class="option">
-      <h2>Option 2 &mdash; Press to activate</h2>
-      <p>Once you've installed via Tampermonkey above, press the button below to open ChatGPT &mdash; the panel appears automatically.</p>
-      <div class="btn-row">
-        <a class="btn" href="https://chatgpt.com/" target="_blank" rel="noopener">Press to activate</a>
-      </div>
-    </section>
+        <!-- Section 1: GitHub Credentials Configuration -->
+        <section class="bg-slate-900 rounded-xl p-6 mb-6 border border-slate-800">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-semibold flex items-center gap-2">
+                    <i class="fa-solid fa-gear text-emerald-500"></i>
+                    GitHub Configuration
+                </h2>
+                <div id="connectionStatus" class="flex items-center gap-2 text-sm">
+                    <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                    <span class="text-slate-400">Not configured</span>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm text-slate-400 mb-1">GitHub Personal Access Token</label>
+                    <input type="password" id="ghToken" placeholder="ghp_xxxxxxxxxxxx"
+                        class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500">
+                </div>
+                <div>
+                    <label class="block text-sm text-slate-400 mb-1">Repository Owner</label>
+                    <input type="text" id="ghOwner" placeholder="username"
+                        class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500">
+                </div>
+                <div>
+                    <label class="block text-sm text-slate-400 mb-1">Repository Name</label>
+                    <input type="text" id="ghRepo" placeholder="repository-name"
+                        class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500">
+                </div>
+            </div>
+            <button id="saveConfigBtn" class="bg-emerald-500 hover:bg-emerald-600 text-white font-medium px-6 py-2 rounded-lg transition-colors">
+                <i class="fa-solid fa-floppy-disk mr-2"></i>Save Configuration
+            </button>
+        </section>
 
-    <footer>
-      <a href="https://rexopay.eu/" target="_blank" rel="noopener">https://rexopay.eu/</a>
-      <br />
-      made by Thomas
-      <a href="https://t.me/final_getsuga_tenshou" target="_blank" rel="noopener">@final_getsuga_tenshou</a>
-    </footer>
-  </div>
+        <!-- Section 2: Real-time Live Analytics Cards -->
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div class="bg-slate-900 rounded-xl p-6 border border-slate-800">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-slate-400 text-sm">Total Revenue</p>
+                        <p class="text-2xl font-bold mt-1" id="totalRevenue">0.00 DH</p>
+                    </div>
+                    <div class="w-12 h-12 bg-emerald-500/20 rounded-lg flex items-center justify-center">
+                        <i class="fa-solid fa-coins text-emerald-500 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-slate-900 rounded-xl p-6 border border-slate-800">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-slate-400 text-sm">Active Clients</p>
+                        <p class="text-2xl font-bold mt-1" id="activeClients">0</p>
+                    </div>
+                    <div class="w-12 h-12 bg-emerald-500/20 rounded-lg flex items-center justify-center">
+                        <i class="fa-solid fa-users text-emerald-500 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-slate-900 rounded-xl p-6 border border-slate-800">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-slate-400 text-sm">Expiring in 48h</p>
+                        <p class="text-2xl font-bold mt-1" id="expiringClients">0</p>
+                    </div>
+                    <div class="w-12 h-12 bg-amber-500/20 rounded-lg flex items-center justify-center">
+                        <i class="fa-solid fa-clock text-amber-500 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Client Subscription Form -->
+        <section class="bg-slate-900 rounded-xl p-6 mb-6 border border-slate-800">
+            <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-user-plus text-emerald-500"></i>
+                New Subscription
+            </h2>
+            <form id="subscriptionForm" class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm text-slate-400 mb-1">Email <span class="text-red-400">*</span></label>
+                        <input type="email" id="subEmail" required placeholder="client@example.com"
+                            class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-slate-400 mb-1">Promo Code</label>
+                        <select id="subPromo"
+                            class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-emerald-500">
+                            <option value="">None</option>
+                            <option value="SPECIAL10">SPECIAL10</option>
+                            <option value="SAVE20">SAVE20</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm text-slate-400 mb-1">Start Date</label>
+                        <input type="date" id="subStartDate"
+                            class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-slate-400 mb-1">End Date</label>
+                        <input type="date" id="subEndDate"
+                            class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-emerald-500">
+                    </div>
+                </div>
+
+                <!-- Price Calculation Display -->
+                <div class="bg-slate-800 rounded-lg p-4 border border-slate-700">
+                    <h3 class="text-sm font-medium text-slate-400 mb-2">Price Calculation</h3>
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-slate-400">Active Days:</span>
+                            <span id="activeDays" class="text-white">30</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-slate-400">Original Price:</span>
+                            <span id="originalPrice" class="text-white">170.00 DH</span>
+                        </div>
+                        <div class="flex justify-between text-sm" id="discountRow" style="display: none;">
+                            <span class="text-slate-400">Discount:</span>
+                            <span id="discountAmount" class="text-red-400">-0.00 DH</span>
+                        </div>
+                        <div class="border-t border-slate-700 pt-1 mt-1 flex justify-between font-semibold">
+                            <span class="text-emerald-500">Final Price:</span>
+                            <span id="finalPrice" class="text-emerald-500">170.00 DH</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="bg-emerald-500 hover:bg-emerald-600 text-white font-medium px-6 py-2 rounded-lg transition-colors w-full md:w-auto">
+                    <i class="fa-solid fa-plus mr-2"></i>Add Subscription
+                </button>
+            </form>
+        </section>
+
+        <!-- Section 4: Interactive Searchable Data Grid -->
+        <section class="bg-slate-900 rounded-xl p-6 border border-slate-800">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-4">
+                <h2 class="text-xl font-semibold flex items-center gap-2">
+                    <i class="fa-solid fa-table text-emerald-500"></i>
+                    Subscriptions
+                </h2>
+                <div class="relative">
+                    <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"></i>
+                    <input type="text" id="searchInput" placeholder="Search by email..."
+                        class="bg-slate-800 border border-slate-700 rounded-lg pl-10 pr-4 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 w-full md:w-64">
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="text-slate-400 border-b border-slate-700">
+                            <th class="text-left py-3 px-4">Email</th>
+                            <th class="text-left py-3 px-4">Start Date</th>
+                            <th class="text-left py-3 px-4">End Date</th>
+                            <th class="text-left py-3 px-4">Amount (DH)</th>
+                            <th class="text-left py-3 px-4">Status</th>
+                            <th class="text-left py-3 px-4">Promo Code</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dataTableBody">
+                        <tr>
+                            <td colspan="6" class="text-center py-8 text-slate-500">
+                                <i class="fa-solid fa-database text-2xl mb-2"></i>
+                                <p>No data loaded. Configure GitHub credentials to get started.</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Global state
+        let currentRecords = [];
+        let currentSHA = null;
+
+        // Utility: Show toast notification
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            const colors = {
+                success: 'bg-emerald-600',
+                error: 'bg-red-600',
+                info: 'bg-blue-600',
+                warning: 'bg-amber-600'
+            };
+            toast.className = `toast ${colors[type] || colors.info} text-white px-4 py-3 rounded-lg shadow-lg text-sm max-w-sm`;
+            toast.textContent = message;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.remove();
+            }, 4000);
+        }
+
+        // Utility: Format date to YYYY-MM-DD
+        function formatDate(date) {
+            return date.toISOString().split('T')[0];
+        }
+
+        // Utility: Get days between two dates
+        function getDaysBetween(startStr, endStr) {
+            const start = new Date(startStr);
+            const end = new Date(endStr);
+            const diff = end - start;
+            return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+        }
+
+        // Load credentials from localStorage
+        function loadCredentials() {
+            const token = localStorage.getItem('crm_gh_token') || '';
+            const owner = localStorage.getItem('crm_gh_owner') || '';
+            const repo = localStorage.getItem('crm_gh_repo') || '';
+            document.getElementById('ghToken').value = token;
+            document.getElementById('ghOwner').value = owner;
+            document.getElementById('ghRepo').value = repo;
+            updateConnectionStatus(token && owner && repo);
+            return { token, owner, repo };
+        }
+
+        // Save credentials to localStorage
+        function saveCredentials() {
+            const token = document.getElementById('ghToken').value.trim();
+            const owner = document.getElementById('ghOwner').value.trim();
+            const repo = document.getElementById('ghRepo').value.trim();
+            if (!token || !owner || !repo) {
+                showToast('Please fill in all credential fields', 'warning');
+                return;
+            }
+            localStorage.setItem('crm_gh_token', token);
+            localStorage.setItem('crm_gh_owner', owner);
+            localStorage.setItem('crm_gh_repo', repo);
+            updateConnectionStatus(true);
+            showToast('Configuration saved successfully', 'success');
+            fetchData();
+        }
+
+        // Update connection status indicator
+        function updateConnectionStatus(connected) {
+            const statusEl = document.getElementById('connectionStatus');
+            if (connected) {
+                statusEl.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-emerald-400">Connected</span>';
+            } else {
+                statusEl.innerHTML = '<span class="w-2 h-2 rounded-full bg-red-500"></span><span class="text-slate-400">Not configured</span>';
+            }
+        }
+
+        // Get credentials from localStorage
+        function getCredentials() {
+            return {
+                token: localStorage.getItem('crm_gh_token') || '',
+                owner: localStorage.getItem('crm_gh_owner') || '',
+                repo: localStorage.getItem('crm_gh_repo') || ''
+            };
+        }
+
+        // Fetch database.json from GitHub API
+        async function fetchData() {
+            const { token, owner, repo } = getCredentials();
+            if (!token || !owner || !repo) {
+                showToast('Please configure GitHub credentials first', 'warning');
+                return;
+            }
+            try {
+                const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/database.json`, {
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+                if (response.status === 401) {
+                    showToast('Authentication failed. Check your GitHub token.', 'error');
+                    return;
+                }
+                if (response.status === 404) {
+                    showToast('database.json not found in repository.', 'error');
+                    currentRecords = [];
+                    currentSHA = null;
+                    updateAnalytics();
+                    renderTable();
+                    return;
+                }
+                if (!response.ok) {
+                    showToast(`GitHub API error: ${response.status}`, 'error');
+                    return;
+                }
+                const data = await response.json();
+                currentSHA = data.sha;
+                const content = atob(data.content.replace(/\n/g, ''));
+                currentRecords = JSON.parse(content);
+                if (!Array.isArray(currentRecords)) {
+                    currentRecords = [];
+                }
+                updateAnalytics();
+                renderTable();
+            } catch (err) {
+                showToast('Network error: Could not reach GitHub API', 'error');
+            }
+        }
+
+        // Update analytics cards
+        function updateAnalytics() {
+            // Total Revenue
+            const totalRevenue = currentRecords.reduce((sum, r) => sum + (parseFloat(r.amount) || 0), 0);
+            document.getElementById('totalRevenue').textContent = totalRevenue.toFixed(2) + ' DH';
+
+            // Active Clients
+            const activeClients = currentRecords.filter(r => r.status === 'Active').length;
+            document.getElementById('activeClients').textContent = activeClients;
+
+            // Expiring in 48h
+            const now = new Date();
+            const in48h = new Date(now.getTime() + 48 * 60 * 60 * 1000);
+            const expiring = currentRecords.filter(r => {
+                if (r.status !== 'Active') return false;
+                const endDate = new Date(r.endDate);
+                return endDate >= now && endDate <= in48h;
+            }).length;
+            document.getElementById('expiringClients').textContent = expiring;
+        }
+
+        // Render data table
+        function renderTable(filter = '') {
+            const tbody = document.getElementById('dataTableBody');
+            let filtered = currentRecords;
+            if (filter) {
+                filtered = currentRecords.filter(r => r.email && r.email.toLowerCase().includes(filter.toLowerCase()));
+            }
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center py-8 text-slate-500">
+                            <i class="fa-solid fa-inbox text-2xl mb-2 block"></i>
+                            <p>${currentRecords.length === 0 ? 'No subscriptions found.' : 'No matching results.'}</p>
+                        </td>
+                    </tr>`;
+                return;
+            }
+            tbody.innerHTML = filtered.map((record, i) => `
+                <tr class="${i % 2 === 0 ? 'bg-slate-800/50' : 'bg-slate-900'} hover:bg-slate-800 transition-colors">
+                    <td class="py-3 px-4">${escapeHtml(record.email || '')}</td>
+                    <td class="py-3 px-4">${escapeHtml(record.startDate || '')}</td>
+                    <td class="py-3 px-4">${escapeHtml(record.endDate || '')}</td>
+                    <td class="py-3 px-4">${parseFloat(record.amount || 0).toFixed(2)} DH</td>
+                    <td class="py-3 px-4">
+                        <span class="px-2 py-1 rounded-full text-xs font-medium ${record.status === 'Active' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-700 text-slate-400'}">
+                            ${escapeHtml(record.status || 'Unknown')}
+                        </span>
+                    </td>
+                    <td class="py-3 px-4">${escapeHtml(record.promoCode || 'None')}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Escape HTML to prevent XSS
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        // Calculate price based on dates and promo
+        function calculatePrice() {
+            const startDate = document.getElementById('subStartDate').value;
+            const endDate = document.getElementById('subEndDate').value;
+            const promo = document.getElementById('subPromo').value;
+
+            if (!startDate || !endDate) return;
+
+            const activeDays = getDaysBetween(startDate, endDate);
+            const originalPrice = (activeDays / 30) * 170;
+            let discount = 0;
+            let finalPrice = originalPrice;
+
+            if (promo === 'SPECIAL10') {
+                discount = originalPrice * 0.10;
+                finalPrice = originalPrice - discount;
+            } else if (promo === 'SAVE20') {
+                discount = 20;
+                finalPrice = originalPrice - 20;
+            }
+
+            finalPrice = Math.max(0, finalPrice);
+
+            document.getElementById('activeDays').textContent = activeDays;
+            document.getElementById('originalPrice').textContent = originalPrice.toFixed(2) + ' DH';
+            document.getElementById('finalPrice').textContent = finalPrice.toFixed(2) + ' DH';
+
+            const discountRow = document.getElementById('discountRow');
+            if (discount > 0) {
+                discountRow.style.display = 'flex';
+                document.getElementById('discountAmount').textContent = '-' + discount.toFixed(2) + ' DH';
+            } else {
+                discountRow.style.display = 'none';
+            }
+
+            return finalPrice;
+        }
+
+        // Set default dates
+        function setDefaultDates() {
+            const today = new Date();
+            const nextMonth = new Date(today);
+            nextMonth.setMonth(nextMonth.getMonth() + 1);
+            document.getElementById('subStartDate').value = formatDate(today);
+            document.getElementById('subEndDate').value = formatDate(nextMonth);
+            calculatePrice();
+        }
+
+        // Handle form submission
+        async function handleSubmit(e) {
+            e.preventDefault();
+
+            const email = document.getElementById('subEmail').value.trim();
+            const startDate = document.getElementById('subStartDate').value;
+            const endDate = document.getElementById('subEndDate').value;
+            const promo = document.getElementById('subPromo').value;
+
+            if (!email) {
+                showToast('Email is required', 'warning');
+                return;
+            }
+            if (!startDate || !endDate) {
+                showToast('Start and end dates are required', 'warning');
+                return;
+            }
+            if (new Date(endDate) <= new Date(startDate)) {
+                showToast('End date must be after start date', 'warning');
+                return;
+            }
+
+            const { token, owner, repo } = getCredentials();
+            if (!token || !owner || !repo) {
+                showToast('Please configure GitHub credentials first', 'warning');
+                return;
+            }
+
+            const finalPrice = calculatePrice();
+
+            try {
+                // Fetch current database.json to get latest SHA
+                const getResponse = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/database.json`, {
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+
+                let records = [];
+                let sha = null;
+
+                if (getResponse.status === 404) {
+                    // File doesn't exist yet, will create it
+                    records = [];
+                } else if (getResponse.status === 401) {
+                    showToast('Authentication failed. Check your GitHub token.', 'error');
+                    return;
+                } else if (!getResponse.ok) {
+                    showToast(`GitHub API error: ${getResponse.status}`, 'error');
+                    return;
+                } else {
+                    const data = await getResponse.json();
+                    sha = data.sha;
+                    const content = atob(data.content.replace(/\n/g, ''));
+                    records = JSON.parse(content);
+                    if (!Array.isArray(records)) records = [];
+                }
+
+                // Create new record
+                const newRecord = {
+                    id: crypto.randomUUID(),
+                    email: email,
+                    startDate: startDate,
+                    endDate: endDate,
+                    amount: parseFloat(finalPrice.toFixed(2)),
+                    promoCode: promo || null,
+                    status: 'Active',
+                    createdAt: new Date().toISOString()
+                };
+
+                records.push(newRecord);
+
+                // PUT updated file
+                const putBody = {
+                    message: `Add subscription for ${email}`,
+                    content: btoa(JSON.stringify(records, null, 2)),
+                    sha: sha
+                };
+                // If file doesn't exist (no sha), omit sha field
+                if (!sha) delete putBody.sha;
+
+                const putResponse = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/database.json`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(putBody)
+                });
+
+                if (putResponse.status === 409) {
+                    showToast('Conflict: database was updated by another process. Please try again.', 'error');
+                    await fetchData();
+                    return;
+                }
+                if (!putResponse.ok) {
+                    showToast(`Failed to save: ${putResponse.status}`, 'error');
+                    return;
+                }
+
+                showToast('Subscription added successfully!', 'success');
+
+                // Reset form
+                document.getElementById('subEmail').value = '';
+                setDefaultDates();
+
+                // Refresh data
+                await fetchData();
+
+            } catch (err) {
+                showToast('Network error: Could not reach GitHub API', 'error');
+            }
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load credentials
+            const creds = loadCredentials();
+
+            // Set default dates
+            setDefaultDates();
+
+            // Event listeners
+            document.getElementById('saveConfigBtn').addEventListener('click', saveCredentials);
+            document.getElementById('subscriptionForm').addEventListener('submit', handleSubmit);
+            document.getElementById('subStartDate').addEventListener('change', calculatePrice);
+            document.getElementById('subEndDate').addEventListener('change', calculatePrice);
+            document.getElementById('subPromo').addEventListener('change', calculatePrice);
+            document.getElementById('searchInput').addEventListener('input', function() {
+                renderTable(this.value);
+            });
+
+            // Fetch data if credentials exist
+            if (creds.token && creds.owner && creds.repo) {
+                fetchData();
+            }
+        });
+    </script>
 </body>
 </html>

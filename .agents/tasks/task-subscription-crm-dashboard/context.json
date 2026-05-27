@@ -1,0 +1,22 @@
+{
+  "project_type": "GitHub Pages static site (single-file HTML + Tailwind CSS + Vanilla JS) with GitHub Actions automation",
+  "language": "HTML/JavaScript/YAML",
+  "build_system": "None - static HTML served via GitHub Pages, no build step needed",
+  "test_framework": "None - static single-file project, validation via manual inspection and YAML lint",
+  "build_command": "N/A - no build step for static HTML",
+  "test_command": "N/A - no test framework",
+  "verification_instructions": "1. Verify index.html is valid HTML with proper structure. 2. Verify database.json is valid JSON (empty array). 3. Verify .github/workflows/alerts.yml is valid YAML with correct cron syntax. 4. Verify README.md describes the new CRM system.",
+  "snapshot_or_generated_files": null,
+  "setup_instructions": "No setup needed - this is a static HTML project served by GitHub Pages",
+  "environment_constraints": "This is a greenfield replacement of an existing repo. Must remove old files (index.html, src/, build.js, chatgpt-checkout.user.js, main.py, requirements.txt, package.json, .env.example) but keep .git directory and .gitignore",
+  "contribution_requirements": "Complete replacement - no contribution guidelines from old project apply",
+  "key_patterns": "Single-file HTML architecture. All frontend JS/CSS in index.html. Data persisted via GitHub API commits to database.json. GitHub Actions for automation.",
+  "relevant_files": [
+    "index.html",
+    "database.json",
+    ".github/workflows/alerts.yml",
+    "README.md",
+    ".gitignore"
+  ],
+  "directory_structure": "Root: index.html (CRM dashboard), database.json (data store), README.md. .github/workflows/alerts.yml for automation."
+}

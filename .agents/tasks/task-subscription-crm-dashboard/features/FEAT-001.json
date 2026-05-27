@@ -1,0 +1,26 @@
+{
+  "id": "FEAT-001",
+  "type": "chore",
+  "description": "Remove all existing project files and create the new project skeleton with database.json, updated .gitignore, and README.md",
+  "status": "completed",
+  "steps": [
+    "Delete the following files from the repo root: build.js, chatgpt-checkout.user.js, index.html, main.py, package.json, requirements.txt, .env.example",
+    "Delete the src/ directory entirely",
+    "Create database.json at repo root with contents: []",
+    "Update .gitignore to be appropriate for the new project (remove Python/Node build artifact entries that no longer apply, keep .env, node_modules for the Actions workflow, .DS_Store, IDE files)",
+    "Replace README.md with documentation describing the new Subscription Management CRM Dashboard, including: project overview, features list (prorating engine, live analytics, searchable grid, promo codes, multi-platform alerts), file structure, setup instructions (GitHub Pages config, repository secrets for NOTIFICATION_WEBHOOK), and usage guide"
+  ],
+  "acceptance_criteria": [
+    "Old files (build.js, chatgpt-checkout.user.js, src/launcher.js, main.py, requirements.txt, package.json, .env.example) no longer exist",
+    "database.json exists at repo root and contains exactly []",
+    "README.md describes the new CRM system with setup instructions",
+    ".gitignore is present and appropriate"
+  ],
+  "verification": [
+    "Run: cat /projects/sandbox/chatgpt-checkout-launcher/database.json and confirm output is []",
+    "Run: ls /projects/sandbox/chatgpt-checkout-launcher/ and confirm old files are gone",
+    "Run: python3 -c \"import json; json.load(open('/projects/sandbox/chatgpt-checkout-launcher/database.json'))\" to validate JSON"
+  ],
+  "blocked_reason": null,
+  "findings": "All old files removed successfully. database.json validated as valid JSON. No build/test commands needed for this static project. .agents/ directory was committed along with the feature changes."
+}

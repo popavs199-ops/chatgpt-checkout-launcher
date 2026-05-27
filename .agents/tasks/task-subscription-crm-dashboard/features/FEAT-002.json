@@ -1,0 +1,40 @@
+{
+  "id": "FEAT-002",
+  "type": "feat",
+  "description": "Create the full CRM dashboard index.html with all features: dark mode UI, GitHub credentials config, subscription form with prorating engine, promo code system, real-time analytics, searchable data grid, and GitHub API integration for data persistence",
+  "status": "completed",
+  "steps": [
+    "Create index.html at repo root as a single-file HTML application with embedded CSS and JavaScript",
+    "Include Tailwind CSS via CDN (https://cdn.tailwindcss.com) and Font Awesome 6.4.0 via CDN (https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css)",
+    "Implement dark mode UI with slate-950/slate-900 backgrounds and emerald-500 accent color throughout",
+    "Build the GitHub Credentials Configuration section: inputs for GitHub PAT, repository owner, and repository name. Save to localStorage with keys crm_gh_token, crm_gh_owner, crm_gh_repo. Load on page init.",
+    "Build the Client Subscription Form with fields: email (required), start date (auto-defaults to today), end date (auto-defaults to today + 1 month), promo code (optional select with options: none, SPECIAL10, SAVE20)",
+    "Implement the Dynamic Prorating Engine: base rate = 170.00 DH / 30 days. Formula: (activeDays / 30) * 170. activeDays = difference between end date and start date in days. Update price display in real-time whenever dates or promo code change.",
+    "Implement Promo Code discounts: SPECIAL10 applies -10% to the prorated price. SAVE20 subtracts 20 DH flat from the prorated price. Display original price, discount amount, and final price.",
+    "Build Real-time Live Analytics section with three cards: Total Revenue (sum of all record amounts in database.json), Active Clients (count of records with status 'Active'), Accounts Expiring in 48 Hours (records where endDate is within 48 hours from now)",
+    "Build the Interactive Searchable Data Grid: HTML table displaying all records from database.json with columns (email, startDate, endDate, amount, status, promoCode). Add a search input that filters rows by email in real-time.",
+    "Implement GitHub API integration for form submission: On submit, fetch database.json from GitHub API (GET /repos/{owner}/{repo}/contents/database.json with PAT auth), decode base64 content, parse JSON array, append new subscription record object {id, email, startDate, endDate, amount, promoCode, status: 'Active', createdAt}, then PUT back with updated base64 content and the file SHA for the commit.",
+    "Implement page load data fetching: On DOMContentLoaded (if credentials are configured), fetch database.json via GitHub API, parse records, render analytics cards and data table.",
+    "Add proper error handling: display user-friendly error messages if GitHub API calls fail, if credentials are missing, or if form validation fails",
+    "Ensure responsive design that works well on desktop and mobile viewports"
+  ],
+  "acceptance_criteria": [
+    "index.html exists at repo root and is valid HTML5",
+    "Page loads Tailwind CSS and Font Awesome from CDN links",
+    "Dark mode styling uses slate-950/900 backgrounds and emerald-500 accents",
+    "GitHub credentials form saves to and loads from localStorage (keys: crm_gh_token, crm_gh_owner, crm_gh_repo)",
+    "Start date defaults to today, end date to +1 month",
+    "Price calculation shows (activeDays / 30) * 170 and updates on date/promo change",
+    "SPECIAL10 applies 10% discount, SAVE20 subtracts 20 DH",
+    "Analytics section has three cards for revenue, active clients, and 48h expiring",
+    "Data table renders subscription records and search filters by email",
+    "Form submit flow: GET database.json (with SHA) -> append record -> PUT with commit message",
+    "All JavaScript is embedded within the single index.html file"
+  ],
+  "verification": [
+    "Run: python3 -c \"html=open('/projects/sandbox/chatgpt-checkout-launcher/index.html').read(); assert 'cdn.tailwindcss.com' in html; assert 'font-awesome' in html or 'fontawesome' in html; assert 'localStorage' in html; assert 'crm_gh_token' in html; assert '170' in html; assert 'SPECIAL10' in html; assert 'SAVE20' in html; print('All checks pass')\"",
+    "Run: python3 -c \"html=open('/projects/sandbox/chatgpt-checkout-launcher/index.html').read(); assert 'slate-950' in html or 'slate-900' in html; assert 'emerald-500' in html; assert '/repos/' in html or 'api.github.com' in html; print('UI and API checks pass')\""
+  ],
+  "blocked_reason": null,
+  "findings": "All verification checks pass. Single-file HTML with embedded JS/CSS. Tailwind via CDN, Font Awesome via CDN. Dark mode with slate-950/900 and emerald-500 accent. GitHub credentials saved to localStorage. Prorating engine uses (activeDays/30)*170 formula. SPECIAL10 = 10% off, SAVE20 = 20 DH flat off. Analytics cards compute from fetched records. Data grid with live email search filter. GitHub API GET/PUT flow for database.json persistence."
+}

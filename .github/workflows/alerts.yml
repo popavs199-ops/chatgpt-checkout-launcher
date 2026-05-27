@@ -1,0 +1,91 @@
+name: Subscription Expiration Alerts
+
+on:
+  schedule:
+    - cron: '0 9 * * *'
+  workflow_dispatch:
+
+jobs:
+  check-expirations:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Check for expiring subscriptions
+        env:
+          WEBHOOK_URL: ${{ secrets.NOTIFICATION_WEBHOOK }}
+        run: |
+          node << 'EOF'
+          const fs = require('fs');
+
+          (async () => {
+            try {
+              const data = fs.readFileSync('./database.json', 'utf8');
+              const records = JSON.parse(data);
+
+              if (!Array.isArray(records) || records.length === 0) {
+                console.log('No records found in database.json');
+                process.exit(0);
+              }
+
+              const today = new Date();
+              today.setUTCHours(0, 0, 0, 0);
+
+              const twoDaysFromNow = new Date(today);
+              twoDaysFromNow.setUTCDate(twoDaysFromNow.getUTCDate() + 2);
+
+              const expiring = records.filter(record => {
+                if (record.status !== 'Active') return false;
+                const endDate = new Date(record.endDate);
+                endDate.setUTCHours(0, 0, 0, 0);
+                return endDate.getTime() === twoDaysFromNow.getTime();
+              });
+
+              if (expiring.length === 0) {
+                console.log('No subscriptions expiring in 48 hours');
+                process.exit(0);
+              }
+
+              console.log(`Found ${expiring.length} subscription(s) expiring in 48 hours`);
+
+              const description = 'The following subscriptions expire in 48 hours:\n\n' +
+                expiring.map(r => `- ${r.email} (expires: ${r.endDate})`).join('\n');
+
+              const todayStr = today.toISOString().split('T')[0];
+
+              const payload = {
+                embeds: [{
+                  title: 'Subscription Expiration Alert',
+                  color: 16744448,
+                  description: description,
+                  footer: { text: `CRM Alert System - ${todayStr}` }
+                }]
+              };
+
+              const webhookUrl = process.env.WEBHOOK_URL;
+              if (!webhookUrl) {
+                console.log('WEBHOOK_URL not configured, skipping notification');
+                process.exit(0);
+              }
+
+              const response = await fetch(webhookUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+              });
+
+              if (response.ok) {
+                console.log('Webhook notification sent successfully');
+              } else {
+                console.log(`Webhook request failed with status: ${response.status}`);
+              }
+            } catch (error) {
+              console.error('Error checking expirations:', error.message);
+              process.exit(1);
+            }
+          })();
+          EOF
