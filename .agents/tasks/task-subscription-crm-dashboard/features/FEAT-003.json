@@ -2,7 +2,7 @@
   "id": "FEAT-003",
   "type": "feat",
   "description": "Create the GitHub Actions workflow for daily subscription expiration alerts via Discord/Telegram webhook",
-  "status": "pending",
+  "status": "in_progress",
   "steps": [
     "Create directory .github/workflows/ if it does not exist",
     "Create .github/workflows/alerts.yml with the following configuration:",
